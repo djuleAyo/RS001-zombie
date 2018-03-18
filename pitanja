@@ -1,0 +1,3 @@
+1. i dalje glut linking problem. Kad se stave flagovi za linkovanje fajla pre imena fajla linker odlepi
+primer: prvi commit
+2. -D -c ne rade zajedno... zasto? kako resiti? ili zasto meni ne rade
