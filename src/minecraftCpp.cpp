@@ -14,11 +14,14 @@
 #include <GL/glut.h>
 
 std::vector<Entity*> entities;
-Camera camera(30, 50, 170);
+Camera camera(0, 0, 0);
 Input input;
-std::vector<Chunk*> chunks;
-  
 
+//TMP for testing
+Chunk c(0, 0, 0);
+std::vector<int> visibleFaces;
+std::vector<int> verts;
+std::vector<float> colors;
 
 
 void onKeyboardUp(unsigned char c, int x, int y);
@@ -28,17 +31,10 @@ void display();
 void reshape(int x, int y);
 
 int main(int argc, char** argv)
-{  
-  //init a simple scene
-  //entities.push_back(new Entity(0, 0, 0));
-  for(int i = 0; i < 10; i++)
-    for(int j = 0; j < 10; j++)
-      for(int k = 0; k < 10; k++) {
-	if(i + j + k < 10)
-	  chunks.push_back(new Chunk(i * 16, j * 16, k * 16));
-      }
-      
-
+{
+  c.visibleBlocks(visibleFaces);
+  c.toVertArray(visibleFaces, verts, colors);
+  
   glutInit(&argc, argv);
 
   glutInitWindowPosition(10, 10);
@@ -120,12 +116,7 @@ void onKeyboardUp(unsigned char c, int x, int y)
 void display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  /*
-  for(auto entity : entities) {
-    entity->draw();
-  }
-  */
+ 
   
   //call actions
   for( auto c : input.keys()) {
@@ -162,30 +153,15 @@ void display()
   camera.look();
 
   //after the camera is set do draws
-  //c.draw();
-
-
-
-  std::vector<int> verts;
-  std::vector<float> colors;
-  cubeToVertArray(0, 0, 0, 0b1, verts, colors);
 
   /*
-  int *vertsPtr = verts.data();
-  float *colorsPtr = colors.data();
-
-  glEnableClientState(GL_VERTEX_ARRAY);
-  glEnableClientState(GL_COLOR_ARRAY);
-  
-  glVertexPointer(3, GL_INT, 0, vertsPtr);
-  glColorPointer(3, GL_FLOAT, 0, colorsPtr);
-
-  glDrawArrays(GL_QUADS, 0, verts.size() / 3);
+    for(auto entity : entities) {
+    entity->draw();
+    }
   */
-  //c.drawArrays();
 
-  for(auto chunk : chunks)
-    chunk->drawArrays();
+  c.drawArrays(verts, colors);
+  
   
   glutSwapBuffers();
   glutPostRedisplay();

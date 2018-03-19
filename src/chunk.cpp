@@ -8,17 +8,15 @@ Chunk::Chunk(int x, int y, int z)
   m_origin[2] = z;
 
   fill(Block::Type::SOIL);
-  visibleBlocks();
-  toVertArray();
 }
 void Chunk::fill(Block::Type b)
 {
   for(int i = 0; i < Chunk::volume; i++)
     m_blocks[i] = b;
 }
-std::vector<int>& Chunk::visibleBlocks()
+std::vector<int>& Chunk::visibleBlocks(std::vector<int> &visibleBlocks)
 {
-  m_visibleBlocks.clear();
+  visibleBlocks.clear();
   for( int i = 0; i < Chunk::volume; i++) {
 
     if(!m_blocks[i]) continue;
@@ -41,41 +39,43 @@ std::vector<int>& Chunk::visibleBlocks()
     if(z == 15 || !m_blocks[x + y * Chunk::dim + (z + 1) * Chunk::dim * Chunk::dim])
       faces |= Block::VisibleFace::SOUTH;
 
-    pushVisible(i, faces);
+    pushVisible(visibleBlocks, i, faces);
       
   }
-  return m_visibleBlocks;
+  return visibleBlocks;
 }
 
-void Chunk::toVertArray()
+//m_origin in this function are bound to instance but vectors passed are not! This allows us to switch positions to chukns
+//which is neat
+void Chunk::toVertArray(const std::vector<int> &visibleBlocks, std::vector<int> &verts, std::vector<float> &colors)
 {
-  //must be called after visibleBlocks
-  for(int i = 0; i < m_visibleBlocks.size(); i += 4) {
-    cubeToVertArray(m_origin[0] + m_visibleBlocks[i],
-		    m_origin[1] + m_visibleBlocks[i + 1],
-		    m_origin[2] + m_visibleBlocks[i + 2],
-		    m_visibleBlocks[i + 3],
-		    m_verts, m_colors
+
+  for(int i = 0; i < visibleBlocks.size(); i += 4) {
+    Block::toVertArray(m_origin[0] + visibleBlocks[i],
+		    m_origin[1] + visibleBlocks[i + 1],
+		    m_origin[2] + visibleBlocks[i + 2],
+		    visibleBlocks[i + 3],
+		    verts, colors
 		    );
   }
 }
-void Chunk::drawArrays()
+void Chunk::drawArrays(std::vector<int> &verts, std::vector<float> &colors)
 {
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
   
-  glVertexPointer(3, GL_INT, 0, m_verts.data());
-  glColorPointer(3, GL_FLOAT, 0, m_colors.data());
+  glVertexPointer(3, GL_INT, 0, verts.data());
+  glColorPointer(3, GL_FLOAT, 0, colors.data());
 
-  glDrawArrays(GL_QUADS, 0, m_verts.size() / 3);
+  glDrawArrays(GL_QUADS, 0, verts.size() / 3);
 
 }
-void Chunk::pushVisible(int i, short faces)
+void Chunk::pushVisible(std::vector<int> &visibleBlocks,int i, short faces)
 {
-  m_visibleBlocks.push_back(i % Chunk::dim);
-  m_visibleBlocks.push_back( (i / Chunk::dim) % Chunk::dim);
-  m_visibleBlocks.push_back(i / (Chunk::dim * Chunk::dim));
-  m_visibleBlocks.push_back(static_cast<int>(faces));
+  visibleBlocks.push_back(i % Chunk::dim);
+  visibleBlocks.push_back( (i / Chunk::dim) % Chunk::dim);
+  visibleBlocks.push_back(i / (Chunk::dim * Chunk::dim));
+  visibleBlocks.push_back(static_cast<int>(faces));
 
 }
 bool Chunk::isEdgeBlock(int i) const
@@ -89,7 +89,7 @@ bool Chunk::isEdgeBlock(int i) const
       ) return true;
   return false;
 }
-void Chunk::draw()
+void Chunk::draw(std::vector<int> &visibleBlocks)
 {
   glPushMatrix();
   glTranslatef(m_origin[0],
@@ -97,147 +97,15 @@ void Chunk::draw()
 	       m_origin[2]);
     
   //dummy implemenation
-  for(int i = 0; i < m_visibleBlocks.size(); i += 4) {
+  for(int i = 0; i < visibleBlocks.size(); i += 4) {
     glPushMatrix();
-    glTranslatef(m_visibleBlocks[i],
-		 m_visibleBlocks[i + 1],
-		 m_visibleBlocks[i + 2]);
+    glTranslatef(visibleBlocks[i],
+		 visibleBlocks[i + 1],
+		 visibleBlocks[i + 2]);
       
-    drawVisibleFaces(m_visibleBlocks[i + 3]);
+    Block::drawVisibleFaces(visibleBlocks[i + 3]);
     glPopMatrix();
 		  
   }
   glPopMatrix();
 }
-
-
-void drawVisibleFaces(short faces)
-{
-
-  //NOTE: in ogl positive z goes to camera
-  //meaning north and south are fliped!
-  if(faces & Block::VisibleFace::UP) {
-    glColor3f(1, 1, 1);
-    glBegin(GL_QUADS);
-    glVertex3i(0, 1, 0);
-    glVertex3i(0, 1, 1);
-    glVertex3i(1, 1, 1);
-    glVertex3i(1, 1, 0);
-    glEnd();
-  }
-  if(faces & Block::VisibleFace::DOWN) {
-    glColor3f(0, 0, 0);
-    glBegin(GL_QUADS);
-    glVertex3i(0, 0, 0);
-    glVertex3i(0, 0, 1);
-    glVertex3i(1, 0, 1);
-    glVertex3i(1, 0, 0);
-    glEnd();
-  }
-  if(faces & Block::VisibleFace::NORTH) {
-    glColor3f(0, 0, 1);
-    glBegin(GL_QUADS);
-    glVertex3i(0, 0, 0);
-    glVertex3i(0, 1, 0);
-    glVertex3i(1, 1, 0);
-    glVertex3i(1, 0, 0);
-    glEnd();
-  }
-  if(faces & Block::VisibleFace::SOUTH) {
-    glColor3f(0, 1, 1);
-    glBegin(GL_QUADS);
-    glVertex3i(0, 0, 1);
-    glVertex3i(0, 1, 1);
-    glVertex3i(1, 1, 1);
-    glVertex3i(1, 0, 1);
-    glEnd();
-  }
-  if(faces & Block::VisibleFace::WEST) {
-    glColor3f(1, 0, 0);
-    glBegin(GL_QUADS);
-    glVertex3i(0, 0, 0);
-    glVertex3i(0, 0, 1);
-    glVertex3i(0, 1, 1);
-    glVertex3i(0, 1, 0);
-    glEnd();
-  }
-  if(faces & Block::VisibleFace::EAST) {
-    glColor3f(0, 1, 0);
-    glBegin(GL_QUADS);
-    glVertex3i(1, 0, 0);
-    glVertex3i(1, 0, 1);
-    glVertex3i(1, 1, 1);
-    glVertex3i(1, 1, 0);
-    glEnd();
-  }
-
-}
-
-void cubeToVertArray(int originX, int originY, int originZ, short faces,
-		     std::vector<int> &verts_out, std::vector<float>&colors_out)
-{
-  std::vector<int> *verts = new std::vector<int>;
-  
-  if(faces & Block::VisibleFace::UP) {
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(0); colors_out.push_back(0);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 1);
-    colors_out.push_back(1); colors_out.push_back(0); colors_out.push_back(1);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 1);
-    colors_out.push_back(1); colors_out.push_back(1); colors_out.push_back(0);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(1); colors_out.push_back(1);
-  }
-  if(faces & Block::VisibleFace::DOWN) {
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 0);
-    colors_out.push_back(0); colors_out.push_back(0); colors_out.push_back(0);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(0); colors_out.push_back(1);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(1); colors_out.push_back(0);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 0);
-    colors_out.push_back(0); colors_out.push_back(1); colors_out.push_back(1);
-  }
-  if(faces & Block::VisibleFace::NORTH) {
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(0); colors_out.push_back(0);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(0); colors_out.push_back(1);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(1); colors_out.push_back(0);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(1); colors_out.push_back(1);
-  }
-  if(faces & Block::VisibleFace::SOUTH) {
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(0); colors_out.push_back(0);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(0); colors_out.push_back(1);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(1); colors_out.push_back(0);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(1); colors_out.push_back(1);
-  }
-  if(faces & Block::VisibleFace::WEST) {
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(0); colors_out.push_back(0);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 1);
-    colors_out.push_back(1); colors_out.push_back(0); colors_out.push_back(1);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 1);
-    colors_out.push_back(1); colors_out.push_back(1); colors_out.push_back(0);
-    verts_out.push_back(originX + 0); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 0);
-    colors_out.push_back(1); colors_out.push_back(1); colors_out.push_back(1);
-  }
-  if(faces & Block::VisibleFace::EAST) {
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 0);
-    colors_out.push_back(0); colors_out.push_back(0); colors_out.push_back(0);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 0); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(0); colors_out.push_back(1);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 1);
-    colors_out.push_back(0); colors_out.push_back(1); colors_out.push_back(0);
-    verts_out.push_back(originX + 1); verts_out.push_back(originY + 1); verts_out.push_back(originZ + 0);
-    colors_out.push_back(0); colors_out.push_back(1); colors_out.push_back(1);
-  }
-
-}
-
