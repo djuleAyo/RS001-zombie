@@ -25,5 +25,5 @@ protected:
   std::array<double, 3> m_aim;
   std::array<double, 2> m_aimSpherical;
   double m_rotationSpeed = .001;
-  double m_movSpeed = .01;
+  double m_movSpeed = .5;
 };

@@ -14,9 +14,9 @@
 #include <GL/glut.h>
 
 std::vector<Entity*> entities;
-Camera camera(0, 0, -2);
+Camera camera(30, 50, 170);
 Input input;
-Chunk c(0, 0, 0);
+std::vector<Chunk*> chunks;
   
 
 
@@ -28,10 +28,16 @@ void display();
 void reshape(int x, int y);
 
 int main(int argc, char** argv)
-{
-
+{  
   //init a simple scene
-  entities.push_back(new Entity(0, 0, 0));
+  //entities.push_back(new Entity(0, 0, 0));
+  for(int i = 0; i < 10; i++)
+    for(int j = 0; j < 10; j++)
+      for(int k = 0; k < 10; k++) {
+	if(i + j + k < 10)
+	  chunks.push_back(new Chunk(i * 16, j * 16, k * 16));
+      }
+      
 
   glutInit(&argc, argv);
 
@@ -42,9 +48,10 @@ int main(int argc, char** argv)
   glutInitDisplayMode(GL_DOUBLE | GL_DEPTH);
 
   //init drawing state
-  glClearColor(.0, .0, .0, .0);
-  glColor4f(1, 0, 0, 0);
-
+  glClearColor(.1, .4, .8, 0);
+  glColor4f(.5, .0, .5, .0);
+  glEnable(GL_DEPTH_TEST);
+  
   //init misc
   glutSetKeyRepeat(GLUT_KEY_REPEAT_OFF);
   glutFullScreen();
@@ -114,10 +121,12 @@ void display()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  /*
   for(auto entity : entities) {
     entity->draw();
   }
-
+  */
+  
   //call actions
   for( auto c : input.keys()) {
     switch(c) {
@@ -153,12 +162,34 @@ void display()
   camera.look();
 
   //after the camera is set do draws
-  c.draw();
+  //c.draw();
+
+
+
+  std::vector<int> verts;
+  std::vector<float> colors;
+  cubeToVertArray(0, 0, 0, 0b1, verts, colors);
+
+  /*
+  int *vertsPtr = verts.data();
+  float *colorsPtr = colors.data();
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_COLOR_ARRAY);
+  
+  glVertexPointer(3, GL_INT, 0, vertsPtr);
+  glColorPointer(3, GL_FLOAT, 0, colorsPtr);
+
+  glDrawArrays(GL_QUADS, 0, verts.size() / 3);
+  */
+  //c.drawArrays();
+
+  for(auto chunk : chunks)
+    chunk->drawArrays();
   
   glutSwapBuffers();
   glutPostRedisplay();
 }
-
 
 
 #endif // end __OLD_GL
