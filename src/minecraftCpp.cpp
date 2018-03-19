@@ -7,6 +7,7 @@
 #include "entity.hpp"
 #include "camera.hpp"
 #include "input.hpp"
+#include "chunk.hpp"
 
 #ifdef __OLD_GL
 
@@ -15,6 +16,10 @@
 std::vector<Entity*> entities;
 Camera camera(0, 0, -2);
 Input input;
+Chunk c(0, 0, 0);
+  
+
+
 
 void onKeyboardUp(unsigned char c, int x, int y);
 void onKeyboard(unsigned char c, int x, int y);
@@ -27,7 +32,7 @@ int main(int argc, char** argv)
 
   //init a simple scene
   entities.push_back(new Entity(0, 0, 0));
-  
+
   glutInit(&argc, argv);
 
   glutInitWindowPosition(10, 10);
@@ -146,6 +151,9 @@ void display()
   
   camera.setAim();  
   camera.look();
+
+  //after the camera is set do draws
+  c.draw();
   
   glutSwapBuffers();
   glutPostRedisplay();
