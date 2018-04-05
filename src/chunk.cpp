@@ -1,4 +1,4 @@
-#include "chunk.hpp"
+#include "include/chunk.h"
 #include <GL/glut.h>
 
 Chunk::Chunk(int x, int y, int z)

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef INPUT_H
+#define INPUT_H
 
 #include <set>
 #include <chrono>
@@ -24,3 +25,5 @@ private:
   int m_windowW, m_windowH;
   std::set<char> m_keys;
 };
+
+#endif // INPUT_H

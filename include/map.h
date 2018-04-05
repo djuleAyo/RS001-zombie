@@ -1,7 +1,7 @@
 #ifndef MAP_H
 #define MAP_H
 
-#include "block.hpp"
+#include "include/block.h"
 
 class Map
 {

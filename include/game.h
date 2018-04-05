@@ -1,5 +1,5 @@
-#ifndef GAME_HPP
-#define GAME_HPP
+#ifndef GAME_H
+#define GAME_H
 
 class Game {
   public:
@@ -7,6 +7,7 @@ class Game {
      * @brief run
      * Pokrece igru
      */
+    Game();
     void run();
 
   private:

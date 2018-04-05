@@ -25,31 +25,31 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    block.cpp \
-    camera.cpp \
-    chunk.cpp \
-    entity.cpp \
-    input.cpp \
-    zombie.cpp \
-    map.cpp \
-    game.cpp \
-    player.cpp \
-    moveable.cpp \
-    ai.cpp
+SOURCES += src/main.cpp\
+        src/mainwindow.cpp \
+    src/block.cpp \
+    src/camera.cpp \
+    src/chunk.cpp \
+    src/entity.cpp \
+    src/input.cpp \
+    src/zombie.cpp \
+    src/map.cpp \
+    src/game.cpp \
+    src/player.cpp \
+    src/moveable.cpp \
+    src/ai.cpp
 
-HEADERS  += mainwindow.h \
-    block.hpp \
-    camera.hpp \
-    chunk.hpp \
-    entity.hpp \
-    input.hpp \
-    game.hpp \
-    map.h \
-    player.h \
-    zombie.h \
-    moveable.h \
-    ai.h
+HEADERS  += include/mainwindow.h \
+    include/block.h \
+    include/camera.h \
+    include/chunk.h \
+    include/entity.h \
+    include/input.h \
+    include/game.h \
+    include/map.h \
+    include/player.h \
+    include/zombie.h \
+    include/moveable.h \
+    include/ai.h
 
-FORMS    += mainwindow.ui
+FORMS    += ui/mainwindow.ui

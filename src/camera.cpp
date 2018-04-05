@@ -1,5 +1,4 @@
-#include "camera.hpp"
-#include <GL/glut.h>
+#include "include/camera.h"
 #include <iostream>
 #include <cmath>
 

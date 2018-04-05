@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BLOCK_H
+#define BLOCK_H
+
 #include <vector>
 #include <GL/glut.h>
 
@@ -33,3 +35,5 @@ public:
 			      std::vector<float> &colors_out);
 
 };
+
+#endif // BLOCK_H

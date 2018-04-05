@@ -1,10 +1,11 @@
-#pragma once
+#ifndef CHUNK_H
+#define CHUNK_H
 
 #include <iostream>
 #include <vector>
 #include <array>
 #include <GL/glut.h>
-#include "block.hpp"
+#include "include/block.h"
 
 class Chunk
 {
@@ -33,4 +34,6 @@ private:
   std::array<int, 3> m_origin;
   std::array<Block::Type, Chunk::volume> m_blocks;
 };
+
+#endif // CHUNK_H
 

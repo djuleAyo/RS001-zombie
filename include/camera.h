@@ -1,5 +1,7 @@
-#pragma once
+#ifndef CAMERA_H
+#define CAMERA_H
 
+#include <GL/glut.h>
 #include <array>
 
 class Camera
@@ -27,3 +29,5 @@ protected:
   double m_rotationSpeed = .001;
   double m_movSpeed = .5;
 };
+
+#endif // CAMERA_H
