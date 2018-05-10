@@ -1,4 +1,4 @@
-#include "include/entity.h"
+#include "entity.h"
 #include <iostream>
 #include <GL/glut.h>
 

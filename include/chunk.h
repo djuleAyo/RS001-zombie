@@ -5,7 +5,7 @@
 #include <vector>
 #include <array>
 #include <GL/glut.h>
-#include "include/block.h"
+#include "block.h"
 
 class Chunk
 {

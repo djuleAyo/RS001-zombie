@@ -1,4 +1,4 @@
-#include "include/ai.h"
+#include "ai.h"
 
 AI::AI()
 {

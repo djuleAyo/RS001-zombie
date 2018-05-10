@@ -1,26 +1,25 @@
 #ifndef GAME_H
 #define GAME_H
 
-class Game {
-  public:
-    /**
-     * @brief run
-     * Pokrece igru
-     */
-    Game();
-    void run();
+#include <SFML/OpenGL.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window/Keyboard.hpp>
 
-  private:
-    /**
-     * @brief processEvents
-     * obradjuje komande
-     */
-    void processEvents();
 
-    void update();
-
-    void render();
-
+class Game
+{    
+public:
+  Game();
+  Game(const Game &) = delete;
+  Game & operator = (const Game &) = delete;
+  void run(unsigned);
+  
+private:
+  void processEvents();
+  void update(const sf::Time &);
+  void render();
+  
+  sf::Window m_window;
 };
 
-#endif // GAME_HPP
+#endif // GAME_H

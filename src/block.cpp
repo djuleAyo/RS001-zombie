@@ -1,4 +1,4 @@
-#include "include/block.h"
+#include "block.h"
 
 
 void Block::drawVisibleFaces(short faces)

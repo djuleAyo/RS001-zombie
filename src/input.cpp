@@ -1,4 +1,4 @@
-#include "include/input.h"
+#include "input.h"
 
 void Input::store(unsigned char c, int x, int y)
 {
