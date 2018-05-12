@@ -9,12 +9,17 @@ Chunk::Chunk(int x, int y, int z)
 
   fill(Block::Type::SOIL);
 }
+Chunk::Chunk(std::array<int, 3> origin)
+  :m_origin(origin)
+{
+  fill(Block::Type::SOIL);
+}
 void Chunk::fill(Block::Type b)
 {
   for(int i = 0; i < Chunk::volume; i++)
     m_blocks[i] = b;
 }
-std::vector<int>& Chunk::visibleBlocks(std::vector<int> &visibleBlocks)
+std::vector<int>& Chunk::visibleBlocks(std::vector<int> &visibleBlocks) const
 {
   visibleBlocks.clear();
   for( int i = 0; i < Chunk::volume; i++) {
@@ -59,7 +64,7 @@ void Chunk::toVertArray(const std::vector<int> &visibleBlocks, std::vector<int> 
 		    );
   }
 }
-void Chunk::drawArrays(std::vector<int> &verts, std::vector<float> &colors)
+void Chunk::drawArrays(const std::vector<int> &verts, const std::vector<float> &colors) const
 {
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_COLOR_ARRAY);
@@ -70,7 +75,7 @@ void Chunk::drawArrays(std::vector<int> &verts, std::vector<float> &colors)
   glDrawArrays(GL_QUADS, 0, verts.size() / 3);
 
 }
-void Chunk::pushVisible(std::vector<int> &visibleBlocks,int i, short faces)
+void Chunk::pushVisible(std::vector<int> &visibleBlocks,int i, short faces) const
 {
   visibleBlocks.push_back(i % Chunk::dim);
   visibleBlocks.push_back( (i / Chunk::dim) % Chunk::dim);
@@ -89,7 +94,7 @@ bool Chunk::isEdgeBlock(int i) const
       ) return true;
   return false;
 }
-void Chunk::draw(std::vector<int> &visibleBlocks)
+void Chunk::draw(std::vector<int> &visibleBlocks) const
 {
   glPushMatrix();
   glTranslatef(m_origin[0],

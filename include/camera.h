@@ -7,7 +7,7 @@
 class Camera
 {
 public:
-  Camera(double x, double y, double z);
+  Camera(double x = 0, double y = 0, double z = 0);
   //variant with no params makes the camera look based on curren state of the camera
   void look() const;
   void setAim();

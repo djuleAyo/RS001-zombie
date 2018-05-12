@@ -8,6 +8,11 @@
 class Input
 {
 public:
+  Input()
+    : m_mouseX(800), m_mouseY(450)
+    {
+      
+    }
   void store(unsigned char c, int x, int y);
   void release(unsigned char c, int x, int y);
   void print();
